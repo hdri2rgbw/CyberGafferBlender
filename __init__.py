@@ -40,6 +40,7 @@ def register():
     bpy.utils.register_class(panel_main.CyberGafferMainPanel)
     bpy.utils.register_class(panel_render.CyberGafferRenderPanel)
 
+
 def unregister():
     del bpy.types.Scene.cyber_gaffer_shared_props
     bpy.utils.unregister_class(shared_props.CyberGafferSharedProps)

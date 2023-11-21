@@ -12,4 +12,4 @@ class CyberGafferMainPanel(Panel):
     bl_context = "scene"
 
     def draw(self, context):
-        self.layout.label(text="CyberGaffer by Antilatency")
+        self.layout.operator('object.cybergaffer_create_target')

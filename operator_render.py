@@ -72,7 +72,7 @@ class CyberGafferRenderOperator(bpy.types.Operator):
             print(f'CyberGafferOperatorRender.poll: No CyberGafferSharedProps')
             return False
 
-        if props.target_obj is None or props.target_obj == "NONE":
+        if props.target_obj is None or props.target_obj == "NONE" or props.target_obj == "":
             # print(f'CyberGafferOperatorRender.poll: Target object is None')
             return False
 

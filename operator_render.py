@@ -5,7 +5,7 @@ import bmesh
 import math
 
 from . import shared_props
-
+from os import path
 
 class CyberGafferRenderOperator(bpy.types.Operator):
     bl_idname = "render.cybergaffer"
@@ -34,7 +34,6 @@ class CyberGafferRenderOperator(bpy.types.Operator):
         bpy.ops.object.shade_smooth()
 
         basic_sphere.select_set(False)
-        basic_sphere.hide_render = True
 
         return basic_sphere
 
@@ -80,6 +79,7 @@ class CyberGafferRenderOperator(bpy.types.Operator):
 
     def execute(self, context):
         props: shared_props.CyberGafferSharedProps = context.scene.cyber_gaffer_shared_props
+        scene = context.scene
 
         target = bpy.data.objects[props.target_obj]
         # TODO: should we link probe and camera to the ALL collections?
@@ -91,9 +91,26 @@ class CyberGafferRenderOperator(bpy.types.Operator):
         camera.parent = probe
         probe.parent = target
 
-        # TODO: render sequence
+        backup_render_path = scene.render.filepath
+        backup_current_camera = scene.camera
+        backup_current_frame = scene.frame_current
+        backup_resolution_x = scene.render.resolution_x
+        backup_resolution_y = scene.render.resolution_y
+
+        # TODO: config output type (EXR?, gamma = 1.0)
+        scene.camera = camera
+        scene.render.resolution_x = scene.render.resolution_y = props.img_size
+        for frame in range(props.start_frame, props.end_frame):
+            scene.frame_current = frame
+            scene.render.filepath = path.join(props.output_folder, f'{target.name}_{frame}.jpg')
+            bpy.ops.render.render(write_still=True)
 
         # Cleanup
+        scene.camera = backup_current_camera
         self.delete_objects([probe, camera])
+        scene.render.filepath = backup_render_path
+        scene.frame_current = backup_current_frame
+        scene.render.resolution_x = backup_resolution_x
+        scene.render.resolution_y = backup_resolution_y
 
         return {'FINISHED'}

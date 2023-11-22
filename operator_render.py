@@ -75,6 +75,10 @@ class CyberGafferRenderOperator(bpy.types.Operator):
             # print(f'CyberGafferOperatorRender.poll: Target object is None')
             return False
 
+        current_renderer = context.scene.render.engine
+        if not(current_renderer == 'CYCLES' or current_renderer == 'EEVEE'):
+            return False
+
         return True
 
     def execute(self, context):
@@ -91,16 +95,40 @@ class CyberGafferRenderOperator(bpy.types.Operator):
         camera.parent = probe
         probe.parent = target
 
+        # Save current settings
         backup_render_path = scene.render.filepath
         backup_current_camera = scene.camera
         backup_current_frame = scene.frame_current
         backup_resolution_x = scene.render.resolution_x
         backup_resolution_y = scene.render.resolution_y
+        backup_film_transparent = scene.render.film_transparent
 
-        # TODO: config output type (EXR?, gamma = 1.0)
+        image_settings = scene.render.image_settings
+        backup_file_format = image_settings.file_format
+        backup_color_management = image_settings.color_management
+        backup_color_depth = image_settings.color_depth
+        backup_color_mode = image_settings.color_mode
+        backup_exr_codec = image_settings.exr_codec
+
+        view_settings = scene.view_settings
+        backup_view_transform = view_settings.view_transform
+        backup_look = view_settings.look
+
+        # Apply settings for CyberGaffer
+        scene.render.film_transparent = True
+
+        image_settings.file_format = 'OPEN_EXR'
+        image_settings.color_management = 'OVERRIDE'
+        image_settings.color_depth = '16'
+        image_settings.color_mode = 'RGBA'
+        image_settings.exr_codec = 'NONE'
+
+        view_settings.view_transform = 'Raw'
+        view_settings.look = 'None'
+
         scene.camera = camera
         scene.render.resolution_x = scene.render.resolution_y = props.img_size
-        for frame in range(props.start_frame, props.end_frame):
+        for frame in range(props.start_frame, props.end_frame + 1):
             scene.frame_current = frame
             scene.render.filepath = path.join(props.output_folder, f'{target.name}_{frame}.jpg')
             bpy.ops.render.render(write_still=True)
@@ -108,6 +136,19 @@ class CyberGafferRenderOperator(bpy.types.Operator):
         # Cleanup
         scene.camera = backup_current_camera
         self.delete_objects([probe, camera])
+
+        # Restore settings
+        scene.render.film_transparent = backup_film_transparent
+
+        view_settings.look = backup_look
+        view_settings.view_transform = backup_view_transform
+
+        image_settings.exr_codec = backup_exr_codec
+        image_settings.file_format = backup_file_format
+        image_settings.color_mode = backup_color_mode
+        image_settings.color_depth = backup_color_depth
+        image_settings.color_management = backup_color_management
+
         scene.render.filepath = backup_render_path
         scene.frame_current = backup_current_frame
         scene.render.resolution_x = backup_resolution_x

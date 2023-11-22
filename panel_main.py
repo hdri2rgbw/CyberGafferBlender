@@ -12,4 +12,11 @@ class CyberGafferMainPanel(Panel):
     bl_context = "scene"
 
     def draw(self, context):
-        self.layout.operator('object.cybergaffer_create_target')
+        layout = self.layout
+
+        current_renderer = context.scene.render.engine
+        if not (current_renderer == 'CYCLES' or current_renderer == 'EEVEE'):
+            layout.alert = True
+            layout.label(text='Only Cycles and Eevee current supported')
+
+        layout.operator('object.cybergaffer_create_target')

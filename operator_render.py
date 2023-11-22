@@ -130,7 +130,7 @@ class CyberGafferRenderOperator(bpy.types.Operator):
         scene.render.resolution_x = scene.render.resolution_y = props.img_size
         for frame in range(props.start_frame, props.end_frame + 1):
             scene.frame_current = frame
-            scene.render.filepath = path.join(props.output_folder, f'{target.name}_{frame}.jpg')
+            scene.render.filepath = path.join(props.output_folder, f'{target.name}_{frame}.exr')
             bpy.ops.render.render(write_still=True)
 
         # Cleanup

@@ -39,6 +39,11 @@ def on_frame_range_changed(self, context, what):
 class CyberGafferSharedProps(bpy.types.PropertyGroup):
     img_size: bpy.props.IntProperty(name="Image Size", description="Size of task images, that will be send to CyberGaffer. Recommended size is (256, 256)", default=256)
     output_folder: bpy.props.StringProperty(name="Output Folder", description="", default="", maxlen=1024, subtype='DIR_PATH')
+
     target_obj: bpy.props.EnumProperty(name="Target", items=item_callback)
+
     start_frame: bpy.props.IntProperty(name="Start Frame", default=1, update=lambda self, context: on_frame_range_changed(self, context, 'start'))
     end_frame: bpy.props.IntProperty(name="End Frame", default=250, update=lambda self, context: on_frame_range_changed(self, context, 'end'))
+
+    server_address: bpy.props.StringProperty(name='Server Address', default='localhost')
+    server_port: bpy.props.IntProperty(name="Server Port", default=8080)

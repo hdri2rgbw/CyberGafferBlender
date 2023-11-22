@@ -15,7 +15,7 @@ class CyberGafferMainPanel(Panel):
         layout = self.layout
 
         current_renderer = context.scene.render.engine
-        if not (current_renderer == 'CYCLES' or current_renderer == 'EEVEE'):
+        if not (current_renderer == 'CYCLES' or current_renderer == 'BLENDER_EEVEE'):
             layout.alert = True
             layout.label(text='Only Cycles and Eevee current supported')
 

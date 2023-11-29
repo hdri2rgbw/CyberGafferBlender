@@ -45,5 +45,8 @@ class CyberGafferSharedProps(bpy.types.PropertyGroup):
     start_frame: bpy.props.IntProperty(name="Start Frame", default=1, update=lambda self, context: on_frame_range_changed(self, context, 'start'))
     end_frame: bpy.props.IntProperty(name="End Frame", default=250, update=lambda self, context: on_frame_range_changed(self, context, 'end'))
 
+    play_delay: bpy.props.FloatProperty(name='Play start delay', default=2.0, min=0.0, unit='TIME')
+    play_start_sequence: bpy.props.BoolProperty(name='Play start sequence', default=True)
+
     server_address: bpy.props.StringProperty(name='Server Address', default='localhost')
     server_port: bpy.props.IntProperty(name="Server Port", default=8080)

@@ -18,6 +18,9 @@ class CyberGafferPlayPanel(Panel):
         layout = self.layout
         props: CyberGafferSharedProps = context.scene.cyber_gaffer_shared_props
 
+        layout.prop(props, 'play_delay')
+        layout.prop(props, 'play_start_sequence')
+
         layout.prop(props, 'server_address')
         layout.prop(props, 'server_port')
 

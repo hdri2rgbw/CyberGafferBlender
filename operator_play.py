@@ -13,10 +13,6 @@ class CyberGafferPlayOperator(Operator):
     bl_idname = "cybergaffer.play"
     bl_label = "CyberGaffer Play"
 
-    backup_start_frame = None
-    backup_end_frame = None
-    backup_current_frame = None
-
     @classmethod
     def poll(cls, context):
         # TODO: check textures to selected range
@@ -86,22 +82,15 @@ class CyberGafferPlayOperator(Operator):
 
         return handler
 
-    def store_current_settings(self, scene):
-        self.backup_current_frame = scene.frame_current
-        self.backup_start_frame = scene.frame_start
-        self.backup_end_frame = scene.frame_end
-
-    def restore_settings(self, scene):
-        scene.frame_current = self.backup_current_frame
-        scene.frame_start = self.backup_start_frame
-        scene.frame_end = self.backup_end_frame
-
     def execute(self, context):
         scene = context.scene
         props: CyberGafferSharedProps = scene.cyber_gaffer_shared_props
 
         scene = context.scene
-        self.store_current_settings(scene)
+
+        current_frame = scene.frame_current
+        start_frame = scene.frame_start
+        end_frame = scene.frame_end
 
         scene.frame_start = props.start_frame
         scene.frame_end = props.end_frame
@@ -110,7 +99,7 @@ class CyberGafferPlayOperator(Operator):
         bpy.app.handlers.animation_playback_post.clear()
         bpy.app.handlers.frame_change_post.clear()
 
-        bpy.app.handlers.animation_playback_post.append(self.on_animation_playback_post(scene.frame_start, scene.frame_end, scene.frame_current))
+        bpy.app.handlers.animation_playback_post.append(self.on_animation_playback_post(start_frame, end_frame, current_frame))
         bpy.app.handlers.frame_change_post.append(self.on_frame_changed)
 
         bpy.ops.screen.animation_play()

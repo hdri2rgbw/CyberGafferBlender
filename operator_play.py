@@ -37,7 +37,7 @@ class CyberGafferPlayOperator(Operator):
         rgb_pixels = [v for i, v in enumerate(pixels) if (i + 1) % 4 != 0]
         byte_array = array.array('f', rgb_pixels).tobytes()
 
-        url = f'http://{props.server_address}:{props.server_port}/UploadEnvironment'
+        url = f'http://{props.server_address}:{props.server_port}/UploadTaskBlender'
 
         fps = scene.render.fps
         fps_base = 1.0
